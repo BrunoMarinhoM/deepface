@@ -24,6 +24,7 @@ def find(
     model_name: str = "VGG-Face",
     distance_metric: str = "cosine",
     enforce_detection: bool = True,
+    enforce_disk_representation_consistency: bool = True,
     detector_backend: str = "opencv",
     align: bool = True,
     expand_percentage: int = 0,
@@ -142,9 +143,12 @@ def find(
         raise ValueError(f"No item found in {db_path}")
 
     # Enforce data consistency amongst on disk images and pickle file
-    must_save_pickle = False
-    new_images = list(set(storage_images) - set(pickled_images))  # images added to storage
-    old_images = list(set(pickled_images) - set(storage_images))  # images removed from storage
+    if enforce_disk_representation_consistency:
+        must_save_pickle = False
+        new_images = list(set(storage_images) - set(pickled_images))  # images added to storage
+        old_images = list(set(pickled_images) - set(storage_images))  # images removed from storage
+    
+
 
     # detect replaced images
     replaced_images = []
