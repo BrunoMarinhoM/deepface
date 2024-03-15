@@ -73,6 +73,10 @@ class YoloClient(Detector):
 
         # For each face, extract the bounding box, the landmarks and confidence
         for result in results:
+
+            if result.boxes is None or result.keypoints is None:
+                continue
+
             # Extract the bounding box and the confidence
             x, y, w, h = result.boxes.xywh.tolist()[0]
             confidence = result.boxes.conf.tolist()[0]
