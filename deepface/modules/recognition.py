@@ -177,7 +177,7 @@ def find(
             if image in set(pickled_images) and image in set(storage_images):
                 replaced_images += [image]
             elif not image in set(pickled_images) and image in set(storage_images):
-                    new_images += [image]
+                new_images += [image]
             elif image in set(pickled_images) and not image in set(storage_images):
                 old_images += [image]
             else:
