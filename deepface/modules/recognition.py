@@ -85,7 +85,7 @@ def find(
 
             - 'identity': Identity label of the detected individual.
 
-            - 'target_x', 'target_y', 'target_w', 'target_h': Bounding box coordinates of the
+             'target_x', 'target_y', 'target_w', 'target_h': Bounding box coordinates of the
                     target face in the database.
 
             - 'source_x', 'source_y', 'source_w', 'source_h': Bounding box coordinates of the
@@ -156,9 +156,21 @@ def find(
     # Get the list of images on storage
     storage_images = image_utils.list_images(path=db_path)
 
+    for image in updated_images:
+        if image in set(pickled_images) and image in set(storage_images):
+            replaced_images += [image]
+            continue
+        if not image in set(pickled_images) and image in set(storage_images):
+            new_images += [image]
+            continue
+        if image in set(pickled_images) and not image in set(storage_images):
+            old_images += [image]
+            continue
+        raise ValueError(f"The image {image} was not found in {db_path}")
+
     if len(storage_images) == 0 and refresh_database is True:
         raise ValueError(f"No item found in {db_path}")
-    if len(representations) == 0 and refresh_database is False:
+    if len(representations) == 0 and refresh_database is False and len(updated_images == 0):
         raise ValueError(f"Nothing is found in {datastore_path}")
 
     must_save_pickle = False
@@ -172,16 +184,6 @@ def find(
             f"Could be some changes in {db_path} not tracked."
             "Set refresh_database to true to assure that any changes will be tracked."
         )
-
-        for image in updated_images:
-            if image in set(pickled_images) and image in set(storage_images):
-                replaced_images += [image]
-            elif not image in set(pickled_images) and image in set(storage_images):
-                new_images += [image]
-            elif image in set(pickled_images) and not image in set(storage_images):
-                old_images += [image]
-            else:
-                raise ValueError(f"The image {image} was not found in {db_path}")
 
     # Enforce data consistency amongst on disk images and pickle file
     if refresh_database:
