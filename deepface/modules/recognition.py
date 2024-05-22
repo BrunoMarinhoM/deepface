@@ -170,7 +170,7 @@ def find(
 
     if len(storage_images) == 0 and refresh_database is True:
         raise ValueError(f"No item found in {db_path}")
-    if len(representations) == 0 and refresh_database is False and len(updated_images == 0):
+    if len(representations) == 0 and len(updated_images) == 0 and refresh_database is False:
         raise ValueError(f"Nothing is found in {datastore_path}")
 
     must_save_pickle = False
