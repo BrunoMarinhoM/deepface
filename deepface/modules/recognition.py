@@ -156,6 +156,12 @@ def find(
     # Get the list of images on storage
     storage_images = image_utils.list_images(path=db_path)
 
+    must_save_pickle = False
+    new_images = []
+    old_images = []
+    replaced_images = []
+    updated_images = set(updated_images)
+
     for image in updated_images:
         if image in set(pickled_images) and image in set(storage_images):
             replaced_images += [image]
@@ -172,12 +178,6 @@ def find(
         raise ValueError(f"No item found in {db_path}")
     if len(representations) == 0 and len(updated_images) == 0 and refresh_database is False:
         raise ValueError(f"Nothing is found in {datastore_path}")
-
-    must_save_pickle = False
-    new_images = []
-    old_images = []
-    replaced_images = []
-    updated_images = set(updated_images)
 
     if not refresh_database:
         logger.info(
