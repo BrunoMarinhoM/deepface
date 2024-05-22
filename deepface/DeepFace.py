@@ -2,7 +2,7 @@
 import os
 import warnings
 import logging
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, Dict, List, Union, Optional, Tuple
 
 # this has to be set before importing tensorflow
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
@@ -261,6 +261,7 @@ def find(
     normalization: str = "base",
     silent: bool = False,
     refresh_database: bool = True,
+    updated_images: Tuple[str] = ()
 ) -> List[pd.DataFrame]:
     """
     Identify individuals in a database
@@ -335,6 +336,7 @@ def find(
         normalization=normalization,
         silent=silent,
         refresh_database=refresh_database,
+        updated_images=updated_images,
     )
 
 

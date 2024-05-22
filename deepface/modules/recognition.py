@@ -1,7 +1,7 @@
 # built-in dependencies
 import os
 import pickle
-from typing import List, Union, Optional, Dict, Any
+from typing import List, Union, Optional, Dict, Any, Tuple
 import time
 
 # 3rd party dependencies
@@ -30,6 +30,7 @@ def find(
     normalization: str = "base",
     silent: bool = False,
     refresh_database: bool = True,
+    updated_images: Tuple[str] = ()
 ) -> List[pd.DataFrame]:
     """
     Identify individuals in a database
@@ -71,6 +72,10 @@ def find(
         refresh_database (boolean): Synchronizes the images representation (pkl) file with the
         directory/db files, if set to false, it will ignore any file changes inside the db_path
         directory (default is True).
+
+        updated_images (tuple): A tuple of strings containing the paths to the images that are 
+        gonna be updated if the refresh_database is set to false, else it will simply ensure
+        disk consistency
 
 
     Returns:
@@ -160,12 +165,23 @@ def find(
     new_images = []
     old_images = []
     replaced_images = []
+    updated_images = set(updated_images)
 
     if not refresh_database:
         logger.info(
             f"Could be some changes in {db_path} not tracked."
             "Set refresh_database to true to assure that any changes will be tracked."
         )
+
+        for image in updated_images:
+            if image in set(pickled_images) and image in set(storage_images):
+                replaced_images += [image]
+            elif not image in set(pickled_images) and image in set(storage_images):
+                    new_images += [image]
+            elif image in set(pickled_images) and not image in set(storage_images):
+                old_images += [image]
+            else:
+                raise ValueError(f"The image {image} was not found in {db_path}")
 
     # Enforce data consistency amongst on disk images and pickle file
     if refresh_database:
